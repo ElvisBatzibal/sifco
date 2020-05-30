@@ -1,0 +1,69 @@
+﻿
+<div class="container">
+    <form id="crearusuarioform">
+        <div class="form-horizontal">
+            <input type="hidden" name="EntityID" id="EntityID" value="@ViewBag.Id" />
+            <input type="hidden" name="IdProfile" id="IdProfile" value="@ViewBag.Perfil" />            
+            <div class="form-group">
+                <label class="control-label col-md-2">Nombre de Usuario:</label>
+                <div class="col-md-10">
+                    <input type="text" name="Username"  id="Username" class="form-control" value="@ViewBag.UserName" min="5" required />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Contraseña:</label>
+                <div class="col-md-10">
+                    <input type="text" name="Password" id="Password" class="form-control" value="" min="5" required />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <button type="submit" onclick="CrearUsuario(event)" class="btn btn-primary">Crear Usuario</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<script type="text/javascript">
+    function CrearUsuario(evt) {
+         evt.preventDefault();
+        //debugger;
+        var inpObj = document.getElementById("Username");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Nombre de usuario:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Password");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Contraseña:  "+inpObj.validationMessage);
+            return;
+        }
+        var NewObject = mapFormToJson($('#crearusuarioform'));
+        //console.log(NewObject);
+
+         $.ajax({
+            url: '@Url.Action("CrearUsuario", "Home")',
+             data: { "usuario": JSON.stringify(NewObject) },
+            type: "POST",
+            dataType: "json",
+             success: function (result) {
+                 console.log(result);
+                 if (result.Success === true) {
+                     toastr.success(result.Message);
+                     window.location.reload();
+                 } else {
+                     toastr.warning('Alerta:'+result.Message);
+                     return;
+                 }
+            },
+             error: function (jqXHR, textStatus, error) {
+                 alert("Ocurrio una excepcion");
+                console.log(error + ":" + textStatus + ":" + jqXHR.responseText);
+            }
+         });
+
+        return;
+    }
+</script>

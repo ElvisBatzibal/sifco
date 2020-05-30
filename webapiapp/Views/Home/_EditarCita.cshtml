@@ -1,0 +1,265 @@
+﻿@using webapiapp.Models;
+
+@{
+    var Cita = (Appointments_medicalDTO)ViewBag.Cita;
+}
+<div class="container">
+    <form id="editarcitaform">
+        <div class="form-horizontal">
+            <input type="hidden" name="EntityID" id="EntityID" value="@Cita.EntityID" />
+            <div class="form-group">
+                <label class="control-label col-md-2">Paciente:</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" value="@Cita.Patient.FullName" readonly />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Medico:</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" value="@Cita.Medic.FullName" readonly />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Estado:</label>
+                <div class="col-md-10">
+                    @if (Cita.Status == nStatus.Finalizada || Cita.Status == nStatus.Cancelada)
+                    {
+                        <input type="text" name="Status" id="Status" class="form-control" value="@Cita.Status" readonly />
+                    }
+                    else
+                    {
+                        <select name="Status" id="Status" class="form-control" required>
+                            <option> -- Selecionar Medico--</option>
+                            @foreach (var item in (List<webapiapp.Models.nStatus>)ViewBag.TipodeEstado)
+                            {
+                                if (Cita.Status == item)
+                                {
+                                    <option selected value="@item">@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+                                }
+
+                            }
+                        </select>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Hora Fin de Cita:</label>
+                <div class="col-md-10">
+                    <input type="time" name="Scheduledhourend" id="Scheduledhourend" value="" required class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Servicio Medico o Cita por:</label>
+                <div class="col-md-10">
+                    <input type="text" name="Medicalservice" id="Medicalservice" value="@Cita.Medicalservice" required class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Dirección o Lugar de Cita:</label>
+                <div class="col-md-10">
+                    <input type="text" name="Address" id="Address" value="@Cita.Address" required class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Nota:</label>
+                <div class="col-md-10">
+                    <textarea rows="3" name="Comments" id="Comments" class="form-control">@Cita.Comments</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Proxima Cita:</label>
+                <div class="col-md-10">
+                    <select name="SiguienteCita" id="SiguienteCita" class="form-control" onchange="ShowAddNext()">
+                        <option value="1"> Si</option>
+                        <option selected value="0"> No</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <button type="submit" onclick="EditarCita(event)" class="btn btn-primary">Editar Cita</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div id="AddNextCita" hidden>
+        <form id="crearcitaform">
+            <input type="hidden" class="form-control" name="IdPatient" id="IdPatient" value="@Cita.IdPatient" />
+            <input type="hidden" class="form-control" name="IdMedic" id="IdMedic" value="@Cita.IdMedic" />
+            <div class="form-group">
+                <label class="control-label col-md-2">Fecha de Cita:</label>
+                <div class="col-md-10">
+                    <input type="date" name="Scheduleddate" id="Scheduleddate" value="" min="@DateTime.Now.ToString("yyyy-MM-dd")" required class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Hora de Cita:</label>
+                <div class="col-md-10">
+                    <input type="time" name="Scheduledhour" id="Scheduledhour" value="" required class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2"> Cita por:</label>
+                <div class="col-md-10">
+                    <input type="text" name="Medicalservice" id="Medicalservice2" value="@Cita.Medicalservice" required class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Dirección de Cita:</label>
+                <div class="col-md-10">
+                    <input type="text" name="Address" id="Address2" value="@Cita.Address" required class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Nota:</label>
+                <div class="col-md-10">
+                    <textarea rows="3" name="Comments" id="Comments2" value="" required class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <button type="submit" onclick="CrearCita(event)" class="btn btn-primary">Crear Cita</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function ShowAddNext() {
+        var SiguienteCita = document.getElementById("SiguienteCita").value;
+        if (parseInt(SiguienteCita) == 1) {
+            $("#AddNextCita").show();
+        } else {
+            $("#AddNextCita").hide();
+        }
+    }
+
+    function EditarCita(evt) {
+         evt.preventDefault();
+        //debugger;
+        var inpObj = document.getElementById("Scheduledhourend");
+        if (inpObj === "Finalizada")
+        {
+            var inpObj = document.getElementById("Scheduledhourend");
+            if (!inpObj.checkValidity()) {
+                toastr.warning("Hora Fin de Cita:  " + inpObj.validationMessage);
+                return;
+            }
+        }
+        var inpObj = document.getElementById("Medicalservice");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Servicio Medico:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Address");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Direccion:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Comments");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Nota:  "+inpObj.validationMessage);
+            return;
+        }
+
+
+        var NewObject = mapFormToJson($('#editarcitaform'));
+        //console.log(NewObject);
+
+         $.ajax({
+            url: '@Url.Action("EditarCita", "Home")',
+             data: { "cita": JSON.stringify(NewObject) },
+            type: "POST",
+            dataType: "json",
+             success: function (result) {
+                 console.log(result);
+                 if (result.Success === true) {
+                     toastr.success(result.Message);
+                     var SiguienteCita = document.getElementById("SiguienteCita").value;
+                     if (parseInt(SiguienteCita) == 1) {
+                         return;
+                     } else {
+                         window.location.reload();
+                     }
+
+                 } else {
+                     toastr.warning('Alerta:'+result.Message);
+                     return;
+                 }
+            },
+             error: function (jqXHR, textStatus, error) {
+                 alert("Ocurrio una excepcion");
+                console.log(error + ":" + textStatus + ":" + jqXHR.responseText);
+            }
+         });
+
+        return;
+    }
+
+     function CrearCita(evt) {
+         evt.preventDefault();
+
+        var inpObj = document.getElementById("Scheduleddate");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Fecha de cita:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Scheduledhour");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Hora de cita:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Medicalservice2");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Servicio Medico:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Address2");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Direccion:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Comments2");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Nota:  "+inpObj.validationMessage);
+            return;
+        }
+
+
+         var NewObject = mapFormToJson($('#crearcitaform'));
+        //console.log(NewObject);
+
+         $.ajax({
+            url: '@Url.Action("CrearCita", "Home")',
+             data: { "cita": JSON.stringify(NewObject) },
+            type: "POST",
+            dataType: "json",
+             success: function (result) {
+                 console.log(result);
+                 if (result.Success === true) {
+                     toastr.success(result.Message);
+                     window.location.reload();
+                 } else {
+                     toastr.warning('Alerta:'+result.Message);
+                     return;
+                 }
+            },
+             error: function (jqXHR, textStatus, error) {
+                 alert("Ocurrio una excepcion");
+                console.log(error + ":" + textStatus + ":" + jqXHR.responseText);
+            }
+         });
+
+        return;
+    }
+</script>

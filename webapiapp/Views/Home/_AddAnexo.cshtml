@@ -1,0 +1,73 @@
+﻿    <div class="col-lg-12">
+    <div style="margin-top:5px; " class="fileinput fileinput-new" data-provides="fileinput">
+        <span class="btn btn-white btn-sm btn-file">
+            <span class="fileinput-new">
+                <i class="fa fa-paperclip fa-lg" data-toggle="tooltip" data-placement="top" title="Adjuntar archivo"></i>
+            </span>
+            <span class="fileinput-exists">Cambiar</span>
+            <input type="file" class="custom-file-input" name="fileatached" id="fileatached">
+            @*<input type="hidden" name="IdApp_medical" id="IdApp_medical" value="@ViewBag.IdCita" />*@
+        </span>
+        <span class="fileinput-filename"></span>
+        <a id="deletefileinputexists" href="#" class="close fileinput-exists" data-dismiss="fileinput" style="float: none">&times;</a>
+    </div>
+    <br />
+    <div>
+        <button style="display:none;" type="submit" onclick="OnClick_UpLoadFile();" class="btn btn-outline btn-success btn-xs" name="btnAddfile" id="btnAddfile" formmethod="post" formnovalidate formaction="@Url.Action("AddAnexoSAP", "DocumentoPdf", new { Area="" })">
+            <i class="fa fa-upload"></i>Actualizar
+        </button>
+    </div>
+</div>
+<script>
+     function OnClick_UpLoadFile() {
+        var files = document.getElementById('fileatached').files;
+        if (!files.length) {
+            toastr.warning('Por favor selecciona un archivo!');
+            return;
+        } else {
+            var form = files[0];
+            var formData = new FormData();
+            formData.append("FileUpload", form);
+            toastr.success('Procesando: Enviando adjunto','Notificación!');
+            $.ajax({
+                url: '@Url.Action("AddAnexo", "Home")',//Server script to process data
+                type: 'POST',
+                dataType: 'json',
+                data: formData,// Form data
+                success: function (response) {
+                    var x = document.getElementById('btnAddfile');
+                    if (x.style.display === "block") {
+                        x.style.display = "none";
+                    }
+                    if (response.Success === false) {
+                        toastr.warning(response.Message);
+                    }
+                    else {
+                        toastr.success(response.Message);
+                        window.location.reload();
+                    }
+                },
+                error: function (error) {
+                    toastr.warning('Comuniquese con el administrador del sistema:' + error);
+                },
+                //Options to tell jQuery not to process data or worry about content-type.
+                contentType: false,
+                processData: false
+            });
+            return;
+         }
+         return;
+    }
+    $('#fileatached').on('change', function () {
+        var x = document.getElementById('btnAddfile');
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        }
+    });
+    $('#deletefileinputexists').on('blur', function () {
+        var x = document.getElementById('btnAddfile');
+        if (x.style.display === "block") {
+            x.style.display = "none";
+        }
+    });
+</script>

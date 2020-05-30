@@ -1,0 +1,18 @@
+﻿<link href="~/Content/Login.css" rel="stylesheet" />
+@{ 
+    string Regex = @"/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,15}$/";
+}
+<div class="login">
+    <h1>Login</h1>
+    <form method="post" action="@Url.Action("Login","Home")">
+        <input type="text" name="Username" placeholder="Username" required="required" autocomplete="off" />
+        <input type="password" name="Password" placeholder="Password" required="required" />
+        <button type="submit" class="btn btn-primary btn-block btn-large">Login</button>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+  
+    var regex =@Regex;
+</script>

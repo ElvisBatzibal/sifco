@@ -1,0 +1,138 @@
+﻿@using webapiapp.Models;
+
+@{
+    var Paciente = (PatientsDTO)ViewBag.Paciente;
+}
+<div class="container">
+    <form id="crearcitaform">
+
+        <div class="form-horizontal">
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Paciente:</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" value="@Paciente.FullName" readonly />
+                    <input type="hidden" class="form-control" name="IdPatient" id="IdPatient" value="@Paciente.EntityID" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Medico:</label>
+                <div class="col-md-10">
+                    <select name="IdMedic" id="IdMedic" class="form-control" required>
+                        <option> -- Selecionar Medico--</option>
+                        @foreach (var item in (IList<MedicDTO>)ViewBag.Medicos)
+                        {
+                            <option value="@item.EntityID">
+                                @item.FullName
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Fecha de Cita:</label>
+                <div class="col-md-10">
+                    <input type="date" name="Scheduleddate" id="Scheduleddate" value="" min="@DateTime.Now.ToString("yyyy-MM-dd")" required class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Hora de Cita:</label>
+                <div class="col-md-10">
+                    <input type="time" name="Scheduledhour" id="Scheduledhour" value="" required class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Servicio Medico o Cita por:</label>
+                <div class="col-md-10">
+                    <input type="text" name="Medicalservice" id="Medicalservice" value="" required class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Dirección o Lugar de Cita:</label>
+                <div class="col-md-10">
+                    <input type="text" name="Address" id="Address" value="" required class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Nota:</label>
+                <div class="col-md-10">
+                    <textarea rows="3" name="Comments" id="Comments" value="" required class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <button type="submit" onclick="CrearCita(event)" class="btn btn-primary">Crear Cita</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    function CrearCita(evt) {
+         evt.preventDefault();
+        //debugger;
+        var inpObj = document.getElementById("IdMedic");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Medico:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Scheduleddate");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Fecha de cita:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Scheduledhour");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Hora de cita:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Medicalservice");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Servicio Medico:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Address");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Direccion:  "+inpObj.validationMessage);
+            return;
+        }
+        var inpObj = document.getElementById("Comments");
+        if (!inpObj.checkValidity()) {
+            toastr.warning("Nota:  "+inpObj.validationMessage);
+            return;
+        }
+
+
+        var NewObject = mapFormToJson($('#crearcitaform'));
+        //console.log(NewObject);
+
+         $.ajax({
+            url: '@Url.Action("CrearCita", "Home")',
+             data: { "cita": JSON.stringify(NewObject) },
+            type: "POST",
+            dataType: "json",
+             success: function (result) {
+                 console.log(result);
+                 if (result.Success === true) {
+                     toastr.success(result.Message);
+                     window.location.reload();
+                 } else {
+                     toastr.warning('Alerta:'+result.Message);
+                     return;
+                 }
+            },
+             error: function (jqXHR, textStatus, error) {
+                 alert("Ocurrio una excepcion");
+                console.log(error + ":" + textStatus + ":" + jqXHR.responseText);
+            }
+         });
+
+        return;
+    }
+</script>

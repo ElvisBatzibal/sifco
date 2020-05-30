@@ -1,0 +1,372 @@
+﻿@using webapiapp.Models;
+@{
+    ViewBag.Title = "Home";
+    int NumLinea = 1;
+}
+<div class="col-lg-12" style="font-family: 'Verdana'">
+    <div class="row">
+        <div class="col-lg-6" style="padding-top:50px; padding-left:50px;padding-right:50px;padding-bottom:50px;">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">Paciente</div>
+                <div class="panel-body">
+                    <form id="crearpacienteform">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Nombre Completo</label>
+                                <input type="text" class="form-control" id="FullName" name="FullName" required>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="Birthdate">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="Birthdate" name="Birthdate" required>
+                            </div>
+                            <button type="submit" onclick="CrearPaciente(event);" class="btn btn-primary">Crear Paciente</button>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="Gender">Genero</label>
+                                <select name="Gender" id="Gender" class="form-control" required>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="DPI">DPI</label>
+                                <input type="text" class="form-control DPI" id="DPI" name="DPI" min="1" maxlength="13" required>
+
+                            </div>
+                        </div>
+
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-6" style="padding-top:50px; padding-left:50px;padding-right:50px;padding-bottom:50px;">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">Medico</div>
+                <div class="panel-body">
+                    <form id="crearmedicoform">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label for="FullName">Nombre Completo</label>
+                                <input type="text" class="form-control" id="FullName" name="FullName" required>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="Birthdate">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="Birthdate" name="Birthdate" required>
+                            </div>
+                            <button type="submit" onclick="CrearMedico(event);" class="btn btn-primary">Crear Medico</button>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label for="Genero">Genero</label>
+                                <select name="Gender" id="Gender" class="form-control" required>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="DPI">DPI</label>
+                                <input type="text" class="form-control DPI" id="DPI" name="DPI" min="1" maxlength="13" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label for="RegistrationNumber">Numero de Colegiado</label>
+                                <input type="number" class="form-control" id="RegistrationNumber" name="RegistrationNumber" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="Specialty">Especialidad</label>
+                                <input type="text" class="form-control" id="Specialty" name="Specialty" required>
+                            </div>
+                        </div>
+
+
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <h4>
+                Lista de Pacientes
+            </h4>
+            <table class="table table-striped table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Codigo</th>
+                        <th scope="col">Nombre  <br /> Completo</th>
+                        <th scope="col">Fecha <br /> Nacimiento</th>
+                        <th scope="col">Genero</th>
+                        <th scope="col">DPI</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        NumLinea = 1;
+                        foreach (var item in (IList<PatientsDTO>)ViewBag.Pacientes)
+                        {
+                            <tr>
+                                <td>@NumLinea</td>
+                                <td>@item.EntityID</td>
+                                <td>@item.FullName</td>
+                                <td>@item.Birthdate.ToShortDateString()</td>
+                                <td>@item.Gender</td>
+                                <td>@item.DPI</td>
+                                <td>
+                                    @if (item.Log.Active)
+                                    {
+                                        @:Si
+                                    }
+                                    else
+                                    {
+                                        @:Si
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.IdAccountUser == 0)
+                                    {
+                                        <a class="btn btn-sm Show-modallobipanel" data-toggle="tooltip" data-placement="top" title="Crear Usuario"
+                                           data-title="Crear Usuario" data-width="40%" data-height="40%" href="@Url.Action("ShowCrearUser", "Home", new { k = item.EntityID, j = 1,name=item.FullName })">
+                                            <i class="fa fa-user-plus fa-lg" aria-hidden="true"></i>
+                                        </a>
+                                    }
+                                    <a class="btn btn-sm Show-modallobipanel" data-toggle="tooltip" data-placement="top" title="Crear Cita o Consulta"
+                                       data-title="Crear Cita" data-width="700px" data-height="700px" href="@Url.Action("ShowCrearCita", "Home", new { k = item.EntityID })">
+                                        <i class="fa fa-plus-circle fa-lg" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="btn btn-sm Show-modallobipanel" data-toggle="tooltip" data-placement="top" title="Ver Citas"
+                                       data-title="Lista de Citas" data-width="80%" data-height="60%" href="@Url.Action("ShowCitasPaciente", "Home", new { k = item.EntityID })">
+                                        <i class="fa fa-bars fa-lg" aria-hidden="true"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            NumLinea++;
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-6">
+            <h4>
+                Lista de Medicos
+            </h4>
+            <table class="table table-striped table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Codigo</th>
+                        <th scope="col">Nombre  <br /> Completo</th>
+                        <th scope="col">Fecha <br /> Nacimiento</th>
+                        <th scope="col">Genero</th>
+                        <th scope="col">DPI</th>
+                        <th scope="col">Colegiado</th>
+                        <th scope="col">Especialidad</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in (IList<MedicDTO>)ViewBag.Medicos)
+                    {
+                        <tr>
+                            <td>@NumLinea</td>
+                            <td>@item.EntityID</td>
+                            <td>@item.FullName</td>
+                            <td>@item.Birthdate.ToShortDateString()</td>
+                            <td>@item.Gender</td>
+                            <td>@item.DPI</td>
+                            <td>@item.RegistrationNumber</td>
+                            <td>@item.Specialty</td>
+                            <td>
+                                @if (item.Log.Active)
+                                {
+                                    @:Si
+                                }
+                                else
+                                {
+                                    @:Si
+                                }
+                            </td>
+                            <td>
+                                @if (item.IdAccountUser == 0)
+                                {
+                                    <a class="btn btn-sm Show-modallobipanel" data-toggle="tooltip" data-placement="top" title="Crear Usuario"
+                                       data-title="Crear Usuario" data-width="40%" data-height="40%" href="@Url.Action("ShowCrearUser", "Home", new { k = item.EntityID, j = 2,name=item.FullName })">
+                                        <i class="fa fa-user-plus fa-lg" aria-hidden="true"></i>
+                                    </a>
+                                }
+                                <a class="btn btn-sm Show-modallobipanel" data-toggle="tooltip" data-placement="top" title="Ver Citas"
+                                   data-title="Lista de Citas" data-width="80%" data-height="60%" href="@Url.Action("ShowCitasMedico", "Home", new { k = item.EntityID })">
+                                    <i class="fa fa-bars fa-lg" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        NumLinea++;
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@*<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>*@
+<script src="~/Scripts/ValidaDPI.js"></script>
+<script type="text/javascript">
+
+    function mapFormToJson(form) {
+        var result = {};
+        $.map($(form).serializeArray(),
+            function (el) {
+                mapFormProperty(result, el);
+            });
+        return result;
+    }
+    function mapFormProperty(form, property) {
+        form[property.name] = property.value;
+    }
+
+    function CrearMedico(evt) {
+        var NewObject = mapFormToJson($('#crearmedicoform'));
+        evt.preventDefault();
+        console.log(NewObject);
+
+
+        var IsValid = true;
+        if (NewObject.FullName === undefined || NewObject.FullName == "") {
+            toastr.warning('Nombre completo es requerido!');
+            return;
+        }
+        if (NewObject.Birthdate === undefined || NewObject.Birthdate === "") {
+            toastr.warning('Fecha de Nacimiento es requerido!');
+            return;
+        }
+        if (NewObject.DPI === undefined || NewObject.DPI === "" || NewObject.DPI.length != 13) {
+            toastr.warning('DPI requerido!');
+            return;
+        }
+        if (DPIIsValid(NewObject.DPI) === false) {
+            toastr.warning('DPI Invalido!');
+            return;
+        }
+        if (NewObject.RegistrationNumber=="") {
+            toastr.warning('Numero de Colegiado requerido!');
+            return;
+        }
+        if (NewObject.Specialty == "") {
+            toastr.warning('Especialidad es requerido!');
+            return;
+        }
+
+         $.ajax({
+            url: '@Url.Action("CrearMedico", "Home")',
+             data: { "medico": JSON.stringify(NewObject) },
+            type: "POST",
+            dataType: "json",
+             success: function (result) {
+                 console.log(result);
+                 if (result.Success === true) {
+                     toastr.success(result.Message);
+                     window.location.reload();
+                 } else {
+                     toastr.warning('Alerta:'+result.Message);
+                     return;
+                 }
+            },
+             error: function (jqXHR, textStatus, error) {
+                 alert("Ocurrio una excepcion");
+                console.log(error + ":" + textStatus + ":" + jqXHR.responseText);
+            }
+         });
+
+        return;
+    }
+
+    function CrearPaciente(evt) {
+        evt.preventDefault();
+        //debugger;
+        var NewObject = mapFormToJson($('#crearpacienteform'));
+
+        var IsValid = true;
+        if (NewObject.FullName=== undefined ||NewObject.FullName == "") {
+            toastr.warning('Nombre completo es requerido!');
+            return;
+        }
+        if (NewObject.Birthdate === undefined || NewObject.Birthdate === "") {
+            toastr.warning('Fecha de Nacimiento es requerido!');
+            return;
+        }
+        if (NewObject.DPI === undefined || NewObject.DPI === "" || NewObject.DPI.length != 13) {
+            toastr.warning('DPI requerido!');
+            return;
+        }
+        if (DPIIsValid(NewObject.DPI) === false)
+        {
+            toastr.warning('DPI Invalido!');
+            return;
+        }
+
+         $.ajax({
+            url: '@Url.Action("CrearPaciente", "Home")',
+             data: { "paciente": JSON.stringify(NewObject) },
+            type: "POST",
+            dataType: "json",
+             success: function (result) {
+                 console.log(result);
+                 if (result.Success === true) {
+                     toastr.success(result.Message);
+                     window.location.reload();
+                 } else {
+                     toastr.warning('Alerta:'+result.Message);
+                     return;
+                 }
+            },
+             error: function (jqXHR, textStatus, error) {
+                 alert("Ocurrio una excepcion");
+                console.log(error + ":" + textStatus + ":" + jqXHR.responseText);
+            }
+         });
+
+        return;
+    }
+
+    $(document).ready(function ()
+    {
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+        //Validacion de DPI
+        $('.DPI').bind('change paste keyup', function (e) {
+            var $this = $(this);
+            var $parent = $this.parent();
+            var DPI = $this.val();
+            if (DPI && DPIIsValid(DPI)) {
+                $parent.addClass('has-success');
+                $parent.removeClass('has-error');
+            } else if (DPI) {
+                $parent.addClass('has-error');
+                $parent.removeClass('has-success');
+            } else {
+                $parent.removeClass('has-error');
+                $parent.removeClass('has-success');
+            }
+        });
+
+
+
+    });
+
+
+</script>
